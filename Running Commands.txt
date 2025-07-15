@@ -1,0 +1,10 @@
+NuSMV -int my_model.smv 
+NuSMV> read_model 
+NuSMV> flatten_hierarchy 
+NuSMV> encode_variables 
+NuSMV> build_boolean_model 
+
+NuSMV> check_ltlspec -k <num of tries> - Not needed
+
+NuSMV> bmc_setup
+NuSMV> check_ltlspec_bmc

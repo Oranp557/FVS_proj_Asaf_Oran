@@ -1,0 +1,127 @@
+MODULE main
+VAR
+    man_c : 1..7;
+    man_r : 1..5;
+    box_1_c : 1..7;
+    box_1_r : 1..5;
+    box_2_c : 1..7;
+    box_2_r : 1..5;
+    goal_1_c : 1..7;
+    goal_1_r : 1..5;
+    goal_2_c : 1..7;
+    goal_2_r : 1..5;
+    walls : array 1..5 of array 1..7 of 0..1;
+ASSIGN
+    init(man_c) := 2;
+    init(man_r) := 2;
+    init(box_1_c) := 3;
+    init(box_1_r) := 3;
+    init(box_2_c) := 4;
+    init(box_2_r) := 3;
+    goal_1_c := 4;
+    goal_1_r := 4;
+    goal_2_c := 5;
+    goal_2_r := 4;
+    walls[1][1] := 1;
+    walls[1][2] := 1;
+    walls[1][3] := 1;
+    walls[1][4] := 1;
+    walls[1][5] := 1;
+    walls[1][6] := 1;
+    walls[1][7] := 1;
+    walls[2][1] := 1;
+    walls[2][2] := 0;
+    walls[2][3] := 0;
+    walls[2][4] := 0;
+    walls[2][5] := 0;
+    walls[2][6] := 0;
+    walls[2][7] := 1;
+    walls[3][1] := 1;
+    walls[3][2] := 0;
+    walls[3][3] := 0;
+    walls[3][4] := 0;
+    walls[3][5] := 0;
+    walls[3][6] := 0;
+    walls[3][7] := 1;
+    walls[4][1] := 1;
+    walls[4][2] := 0;
+    walls[4][3] := 0;
+    walls[4][4] := 0;
+    walls[4][5] := 0;
+    walls[4][6] := 0;
+    walls[4][7] := 1;
+    walls[5][1] := 1;
+    walls[5][2] := 1;
+    walls[5][3] := 1;
+    walls[5][4] := 1;
+    walls[5][5] := 1;
+    walls[5][6] := 1;
+    walls[5][7] := 1;
+next(man_c) :=
+    case
+        move = r & (mv_r | push_r) & (man_c < 7) : man_c + 1;
+        move = l & (mv_l | push_l) & (man_c > 1) : man_c - 1;
+        move = u : man_c;
+        move = d : man_c;
+        TRUE : man_c;
+    esac;
+next(man_r) :=
+    case
+        move = r : man_r;
+        move = l : man_r;
+        move = u & (mv_u | push_u) & (man_r > 1) : man_r - 1;
+        move = d & (mv_d | push_d) & (man_r < 5) : man_r + 1;
+        TRUE : man_r;
+    esac;
+next(box_1_c) :=
+    case
+        push_l & (box_1_c < 7) : box_1_c - 1;
+        push_r & (box_1_c > 1) : box_1_c + 1;
+        TRUE: box_1_c;
+    esac;
+next(box_1_r) :=
+    case
+        push_u & (box_1_r > 1) : box_1_r - 1;
+        push_d & (box_1_r < 5) : box_1_r + 1;
+        TRUE: box_1_r;
+    esac;
+next(box_2_c) :=
+    case
+        push_l & (box_2_c < 7) : box_2_c - 1;
+        push_r & (box_2_c > 1) : box_2_c + 1;
+        TRUE: box_2_c;
+    esac;
+next(box_2_r) :=
+    case
+        push_u & (box_2_r > 1) : box_2_r - 1;
+        push_d & (box_2_r < 5) : box_2_r + 1;
+        TRUE: box_2_r;
+    esac;
+DEFINE
+    mv_r := (move = r) & (man_c < 7) & (walls[man_r][man_c + 1] = 0) & !box_on_r;
+    mv_l := (move = l) & (man_c > 1) & (walls[man_r][man_c - 1] = 0) & !box_on_l;
+    mv_u := (move = u) & (man_r > 1) & (walls[man_r - 1][man_c] = 0) & !box_on_t;
+    mv_d := (move = d) & (man_r < 5) & (walls[man_r + 1][man_c] = 0) & !box_on_b;
+    box_1_on_r := (man_c + 1 = box_1_c) & (man_r = box_1_r);
+    box_1_on_rp1 := (man_c + 2 = box_1_c) & (man_r = box_1_r);
+    box_1_on_l := (man_c - 1 = box_1_c) & (man_r = box_1_r);
+    box_1_on_lp1 := (man_c - 2 = box_1_c) & (man_r = box_1_r);
+    box_1_on_t := (man_c = box_1_c) & (man_r - 1 = box_1_r);
+    box_1_on_tp1 := (man_c = box_1_c) & (man_r - 2 = box_1_r);
+    box_1_on_b := (man_c = box_1_c) & (man_r + 1 = box_1_r);
+    box_1_on_bp1 := (man_c = box_1_c) & (man_r + 2 = box_1_r);
+    box_2_on_r := (man_c + 1 = box_2_c) & (man_r = box_2_r);
+    box_2_on_rp1 := (man_c + 2 = box_2_c) & (man_r = box_2_r);
+    box_2_on_l := (man_c - 1 = box_2_c) & (man_r = box_2_r);
+    box_2_on_lp1 := (man_c - 2 = box_2_c) & (man_r = box_2_r);
+    box_2_on_t := (man_c = box_2_c) & (man_r - 1 = box_2_r);
+    box_2_on_tp1 := (man_c = box_2_c) & (man_r - 2 = box_2_r);
+    box_2_on_b := (man_c = box_2_c) & (man_r + 1 = box_2_r);
+    box_2_on_bp1 := (man_c = box_2_c) & (man_r + 2 = box_2_r);
+    push_r := (move = r) & (walls[man_r][man_c + 2] = 0) & box_1_on_r & !box_2_on_rp1|  box_2_on_r & !box_1_on_rp1;
+    (move = l) & (walls[man_r][man_c - 2] = 0) & box_1_on_l & !box_2_on_lp1|  box_2_on_l & !box_1_on_lp1;
+    push_r := (move = r) & (walls[man_r][man_c + 2] = 0) & box_1_on_r & !box_2_on_rp1|  box_2_on_r & !box_1_on_rp1;
+    push_u := (move = u) & (walls[man_r - 2][man_c] = 0) &  box1_on_t & !box_2_on_tp1|  box2_on_t & !box_1_on_tp1;
+    push_d := (move = d) & (walls[man_r + 2][man_c] = 0) & box1_on_b & !box_2_on_bp1|  box2_on_b & !box_1_on_bp1;
+    win := (box_1_c = goal_1_c) & (box_1_r = goal_1_r) | (box_1_c = goal_2_c) & (box_1_r = goal_2_r) | (box_2_c = goal_1_c) & (box_2_r = goal_1_r) | (box_2_c = goal_2_c) & (box_2_r = goal_2_r);
+LTLSPEC !F win;
